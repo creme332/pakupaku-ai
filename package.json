@@ -1,0 +1,13 @@
+{
+  "name": "pakupaku-ai",
+  "version": "1.0.0",
+  "description": "A bot for playing PakuPaku by ABA Games, a 1D PAC-MAN game.",
+  "scripts": {
+    "watch_games": "light-server -s docs -w \"docs/**/* # # reload\""
+  },
+  "author": "creme332",
+  "license": "MIT",
+  "devDependencies": {
+    "light-server": "^2.9.1"
+  }
+}
