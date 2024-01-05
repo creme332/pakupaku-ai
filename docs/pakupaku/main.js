@@ -67,13 +67,17 @@ options = {
   theme: "dark",
   viewSize: { x: 100, y: 50 },
   isPlayingBgm: true,
-  isReplayEnabled: true,
+  isSoundEnabled: false,
+  isReplayEnabled: false,
   seed: 9,
 };
 
 /** @type {{x: number, vx: number}} */
 let player;
-/** @type {{x: number, eyeVx: number}} */
+/**
+ * eyeVx is the direction of movement of enemy's eyes. Enemy's eye moves when
+ * enemy is dead.
+ * @type {{x: number, eyeVx: number}} */
 let enemy;
 /** @type {{x: number, isPower: boolean}[]} */
 let dots;
@@ -83,24 +87,35 @@ let multiplier;
 
 function update() {
   if (!ticks) {
+    /// initialize game
     player = { x: 40, vx: 1 };
     enemy = { x: 100, eyeVx: 0 };
     multiplier = 0;
     addDots();
     powerTicks = animTicks = 0;
   }
+
+  // make game faster with time
   animTicks += difficulty;
+
   color("black");
   text(`x${multiplier}`, 3, 9);
   if (input.isJustPressed) {
-    player.vx *= -1;
+    // screen is tapped so change direction of player
+    player.vx *= -1; // vx is the horizontal velocity of the player
   }
+  // update player position
+  // new position =  old position + velocity
   player.x += player.vx * 0.5 * difficulty;
+
+  // check if player moved out of screen
+  // and update position accordingly
   if (player.x < -3) {
     player.x = 103;
   } else if (player.x > 103) {
     player.x = -3;
   }
+
   color("blue");
   rect(0, 23, 100, 1);
   rect(0, 25, 100, 1);
@@ -108,10 +123,12 @@ function update() {
   rect(0, 36, 100, 1);
   color("green");
   const ai = floor(animTicks / 7) % 4;
+
   char(addWithCharCode("a", ai === 3 ? 1 : ai), player.x, 30, {
     // @ts-ignore
     mirror: { x: player.vx },
   });
+
   remove(dots, (d) => {
     color(
       d.isPower && floor(animTicks / 7) % 2 === 0 ? "transparent" : "yellow"
@@ -130,10 +147,13 @@ function update() {
       return true;
     }
   });
+
   const evx =
     enemy.eyeVx !== 0
       ? enemy.eyeVx
       : (player.x > enemy.x ? 1 : -1) * (powerTicks > 0 ? -1 : 1);
+
+  // update enemy position so that it follows player
   enemy.x = clamp(
     enemy.x +
       evx *
@@ -142,6 +162,7 @@ function update() {
     0,
     100
   );
+
   if ((enemy.eyeVx < 0 && enemy.x < 1) || (enemy.eyeVx > 0 && enemy.x > 99)) {
     enemy.eyeVx = 0;
   }
@@ -163,6 +184,7 @@ function update() {
       mirror: { x: evx },
     }
   ).isColliding.char;
+
   if (enemy.eyeVx === 0 && (c.a || c.b || c.c)) {
     if (powerTicks > 0) {
       play("powerUp");
@@ -171,6 +193,7 @@ function update() {
       powerTicks = 0;
       multiplier++;
     } else {
+      // collision with enemy end game
       play("explosion");
       end();
     }
@@ -187,3 +210,33 @@ function addDots() {
   dots = times(16, (i) => ({ x: i * 6 + 5, isPower: i === pi }));
   multiplier++;
 }
+
+(function botController() {
+  function play() {
+    const playerSpeed = 0.5 * difficulty;
+
+    if (!player || !enemy) return;
+
+    // console.log(player);
+    // console.log(animTicks);
+    console.log(enemy);
+    console.log(playerSpeed);
+
+    // reverseDirection();
+  }
+
+  /**
+   * Reverse player movement direction.
+   * @returns void
+   */
+  function reverseDirection() {
+    if (!player) {
+      return;
+    }
+    console.log("Changed direction");
+    player.vx *= -1;
+  }
+
+  // make a move every 1s
+  setInterval(play, 1000);
+})();
