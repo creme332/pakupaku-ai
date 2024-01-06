@@ -1,5 +1,6 @@
 /**
- * A game interface. Use this interface to get/set information in your bot algorithm.
+ * An interface for your bot algorithm to communicate with the game.
+ * It ensures that you are not inadvertently modifying the game.
  * Do not modify this code unless you know what you are doing.
  * @returns
  */
@@ -154,7 +155,13 @@ function botController() {
    */
   function main() {
     if (!game.gameOngoing()) return;
+
+    // call your strategy here
     creme332Strategy();
+    // AnotherGoodNameStrategy();
+
+    // save the position of your player
+    // after strategy has been applied
     game.savePlayerPosition();
   }
 
@@ -174,38 +181,12 @@ function botController() {
       return currentPlayer.position - currentEnemy.position;
     }
 
-    // console.log("player", game.getPlayer());
-    // console.log("enemy", game.getEnemy());
-    // console.log(game.getDots());
-
     if (
       Math.abs(getPlayerEnemyGap()) < 20 &&
       // if player and enemy are moving in opposite directions
       currentPlayer.velocity * currentEnemy.velocity < 0
     ) {
       game.reversePlayerDirection();
-    }
-  }
-
-  /**
-   * Strategy by user mrb on HackerNews.
-   *
-   * Reference: https://news.ycombinator.com/item?id=38848687
-   */
-  function mrbStrategy() {
-    /* direction of the enemy: to our right (1) or to our left (-1) */
-    const dir = enemy.x > player.x ? 1 : -1;
-    /* if pac-man... */
-    if (
-      /* ...has no powerup or powerup expires in less than 10 "ticks" */ powerTicks <
-        10 &&
-      /* ...is headed toward enemy */ player.vx == dir &&
-      /* ...is too close to enemy */ abs(player.x - enemy.x) < 25 &&
-      /* and if enemy's state is not "eyes flying back" */ enemy.eyeVx == 0
-    ) {
-      // "ArrowUp" or any arrow key reverses the direction of pac-man
-      document.dispatchEvent(new KeyboardEvent("keydown", { code: "ArrowUp" }));
-      document.dispatchEvent(new KeyboardEvent("keyup", { code: "ArrowUp" }));
     }
   }
 
