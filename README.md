@@ -44,12 +44,6 @@ The default bot strategy used is `creme332Strategy`. You can easily create your 
 
 All code for the bot is found in `docs/pakupaku/bot.js`. 
 
-## Game modifications
-A few modifications were made to the original game to improve testing and readability:
-- Turned off sound
-- Turned off game replay
-- Added a couple of comments
-
 ## Limitations
 The `creme332Strategy` has several limitations:
 - It can end up in a situation where it takes a very long time to eat the dots in the middle: 
@@ -66,6 +60,13 @@ The `creme332Strategy` has several limitations:
     - [ ] add get functions for `eye` of enemy
     - [ ] add `powerTicks`
 - [ ] Add more documentation for original game code in `main.js`
+- [ ] Minify javascript files
+
+## Licenses
+
+This repository includes code/content under various licenses:
+- Code from `docs/pakupaku/main.js` is under the MIT License (see LICENSE-A)
+- Code from `docs/pakupaku/bot.js` is under the MIT License (see LICENSE)
 
 ## References
 - Code for pakupaku game: https://abagames.github.io/crisp-game-lib-11-games/pakupaku/main.js

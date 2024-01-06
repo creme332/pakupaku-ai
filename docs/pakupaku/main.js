@@ -1,3 +1,11 @@
+/*
+* Original code (or parts of it) sourced from ABA Games under the MIT License.
+  Modifications:
+- Turned off sound
+- Turned off game replay
+- Added a couple of comments
+*/
+
 title = "PAKU PAKU";
 
 description = `
