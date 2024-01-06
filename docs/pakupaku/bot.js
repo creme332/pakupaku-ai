@@ -143,7 +143,7 @@ function interface() {
 
 (function botController() {
   const game = interface();
-  setInterval(main, 1000);
+  setInterval(main, 1); // ! Do not modify this line
 
   /**
    * Driver function for bot.
@@ -161,8 +161,35 @@ function interface() {
    * It must make use of the game interface.
    */
   function strategy() {
-    console.log("player", game.getPlayer());
-    console.log("enemy", game.getEnemy());
-    console.log(game.getDots());
+    const currentPlayer = game.getPlayer();
+    const currentEnemy = game.getEnemy();
+
+    /**
+     * Make player run away from enemy by ensuring that player
+     * and enemy moves in the same direction.
+     */
+    function flee() {
+      const playerDirection = currentPlayer.velocity > 0 ? 1 : -1;
+      const enemyDirection = currentEnemy.velocity > 0 ? 1 : -1;
+
+      console.log(playerDirection, enemyDirection);
+      // check if player is already fleeing and if so do nothing
+      if (playerDirection == enemyDirection) return;
+
+      game.reversePlayerDirection();
+    }
+
+    /**
+     * Calculates distance between player and enemy
+     * @returns A value 0-100
+     */
+    function getPlayerEnemyGap() {
+      return Math.abs(currentPlayer.position - currentEnemy.position);
+    }
+
+    // console.log("player", game.getPlayer());
+    // console.log("enemy", game.getEnemy());
+    // console.log(game.getDots());
+    if (getPlayerEnemyGap() < 20) flee();
   }
 })();
