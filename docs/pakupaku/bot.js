@@ -17,7 +17,8 @@ function interface() {
   }
 
   /**
-   * Returns velocity of enemy
+   * Returns velocity of enemy. Negative velocity means that enemy
+   * is moving left and positive velocity means that enemy is moving right.
    * @returns
    */
   function getEnemyVelocity() {
@@ -50,7 +51,8 @@ function interface() {
   }
 
   /**
-   * Returns velocity of player
+   * Returns velocity of player. Negative velocity means that player
+   * is moving left and positive velocity means that player is moving right.
    * @returns float
    */
   function getPlayerVelocity() {
@@ -68,7 +70,7 @@ function interface() {
 
   /**
    * Position of player on x-axis
-   * @returns A value 1-100
+   * @returns A value 0-100
    */
   function getEnemyPosition() {
     return enemy?.x;
@@ -79,7 +81,8 @@ function interface() {
    * @returns 1 if player is moving right and -1 otherwise
    */
   function getPlayerDirection() {
-    return player?.vx;
+    if (!player) return;
+    return player.vx;
   }
 
   /**
@@ -87,7 +90,6 @@ function interface() {
    * @returns 1 if enemy is moving right and -1 otherwise
    */
   function getEnemyDirection() {
-    if (!gameOngoing) return;
     return getEnemyVelocity() > 0 ? 1 : -1;
   }
 
@@ -152,7 +154,7 @@ function botController() {
    */
   function main() {
     if (!game.gameOngoing()) return;
-    strategy();
+    creme332Strategy();
     game.savePlayerPosition();
   }
 
@@ -160,37 +162,77 @@ function botController() {
    * Strategy that your bot will employ while game is ongoing.
    * It must make use of the game interface.
    */
-  function strategy() {
+  function creme332Strategy() {
     const currentPlayer = game.getPlayer();
     const currentEnemy = game.getEnemy();
 
     /**
-     * Make player run away from enemy by ensuring that player
-     * and enemy moves in the same direction.
-     */
-    function flee() {
-      const playerDirection = currentPlayer.velocity > 0 ? 1 : -1;
-      const enemyDirection = currentEnemy.velocity > 0 ? 1 : -1;
-
-      console.log(playerDirection, enemyDirection);
-      // check if player is already fleeing and if so do nothing
-      if (playerDirection == enemyDirection) return;
-
-      game.reversePlayerDirection();
-    }
-
-    /**
-     * Calculates distance between player and enemy
-     * @returns A value 0-100
+     * Calculates displacement from player to enemy
+     * @returns
      */
     function getPlayerEnemyGap() {
-      return Math.abs(currentPlayer.position - currentEnemy.position);
+      return currentPlayer.position - currentEnemy.position;
     }
 
     // console.log("player", game.getPlayer());
     // console.log("enemy", game.getEnemy());
     // console.log(game.getDots());
-    if (getPlayerEnemyGap() < 20) flee();
+
+    if (
+      Math.abs(getPlayerEnemyGap()) < 20 &&
+      // if player and enemy are moving in opposite directions
+      currentPlayer.velocity * currentEnemy.velocity < 0
+    ) {
+      game.reversePlayerDirection();
+    }
+  }
+
+  /**
+   * Strategy by user mrb on HackerNews.
+   *
+   * Reference: https://news.ycombinator.com/item?id=38848687
+   */
+  function mrbStrategy() {
+    /* direction of the enemy: to our right (1) or to our left (-1) */
+    const dir = enemy.x > player.x ? 1 : -1;
+    /* if pac-man... */
+    if (
+      /* ...has no powerup or powerup expires in less than 10 "ticks" */ powerTicks <
+        10 &&
+      /* ...is headed toward enemy */ player.vx == dir &&
+      /* ...is too close to enemy */ abs(player.x - enemy.x) < 25 &&
+      /* and if enemy's state is not "eyes flying back" */ enemy.eyeVx == 0
+    ) {
+      // "ArrowUp" or any arrow key reverses the direction of pac-man
+      document.dispatchEvent(new KeyboardEvent("keydown", { code: "ArrowUp" }));
+      document.dispatchEvent(new KeyboardEvent("keyup", { code: "ArrowUp" }));
+    }
+  }
+
+  /**
+   * Strategy by user AnotherGoodName on HackerNews.
+   *
+   * Reference: https://news.ycombinator.com/item?id=38849868
+   */
+  function AnotherGoodNameStrategy() {
+    /* direction of the enemy: to our right (1) or to our left (-1) */
+    const dir = enemy.x > player.x ? 1 : -1;
+    const nearWall = enemy.x < 10 || enemy.x > 90;
+    /* if pac-man... */
+    if (
+      /* ...has no powerup or powerup expires in less than 10 "ticks" */
+      powerTicks < 10 &&
+      /* ...is headed toward enemy */ player.vx == dir &&
+      /* ...is too close to enemy */ abs(player.x - enemy.x) <
+        /* ...the distance before running away can be lower if we're near an edge */
+        (dir == 1 ? player.x / 7 : (100 - player.x) / 7) + 7 &&
+      /* and if enemy's state is not "eyes flying back" */
+      enemy.eyeVx == 0
+    ) {
+      // "ArrowUp" or any arrow key reverses the direction of pac-man
+      document.dispatchEvent(new KeyboardEvent("keydown", { code: "ArrowUp" }));
+      document.dispatchEvent(new KeyboardEvent("keyup", { code: "ArrowUp" }));
+    }
   }
 }
 
