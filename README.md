@@ -1,5 +1,5 @@
 # pakupaku-ai 👾
-A simple bot for playing the 1D PAC-MAN game PakuPaku by ABA Games. The [highest score](./assets/best-score.gif) reached is around 43000.
+A simple bot for playing the 1D PAC-MAN game PakuPaku by ABA Games. The [highest score](./assets/best-score.gif) it has reached is 43000.
 
 ![AI GIF](./assets/sample-ai.gif)
 
@@ -8,7 +8,11 @@ A simple bot for playing the 1D PAC-MAN game PakuPaku by ABA Games. The [highest
 [![badge](https://img.shields.io/badge/Original%20Game-000?style=for-the-badge&logo=googleplay&logoColor=%#00B0D8)
 ](https://abagames.github.io/crisp-game-lib-11-games/?pakupaku)
 
-This repository contains a copy of the [original game](docs/pakupaku/main.js), an interface for writing your own bot, and some sample strategies for the bot. [bot](docs/pakupaku/bot.js).
+## Features
+
+- A refactored version of the original game
+- An interface for writing your own bot
+- 2 bot strategies
 ## Installation
 > 🔴 **Requirements**: Git, Node.js 
 
@@ -24,29 +28,44 @@ npm install
 ```
 
 ## Usage
-You can easily create your own bot by modifying `bot.js`. The default strategy used is `creme332Strategy`.
 
-Run your bot:
+To run bot:
 ```
 npm run start
 ```
 
-Open http://localhost:4000/?pakupaku in your browser.
+Open http://localhost:4000/?pakupaku in your browser then tap on the screen once to start the game.
 
 > 🟢 **Tip**: You can paste the code in `bot.js` directly into the console of the [original game](https://abagames.github.io/crisp-game-lib-11-games/?pakupaku).
+> 
+### Create your own bot
 
-## To-do
-- [ ] Rename `docs` to `src`
-- [ ] if distance between player and power up is small, go for powerup instead of fleeing
-- [ ] deploy on github
-- [ ] download dependencies
-- [ ] create a release
+The default bot strategy used is `creme332Strategy`. You can easily create your own bot by creating your strategy function inside `botController` and then calling it in the `main` function.
+
+All code for the bot is found in `docs/pakupaku/bot.js`. 
+
+## Game modifications
+A few modifications were made to the original game to improve testing and readability:
+- Turned off sound
+- Turned off game replay
+- Added a couple of comments
 
 ## Limitations
-My bot which uses the `creme332Strategy` has several limitations:
-- It can sometimes hesitate to take the power up dot and a situation as shown below persists for some time:
-    ![git showing bot hesitation](./assets/ai-hesitation.gif)
-- It can end up too close to the eye of the dead enemy and is unable to escape when enemy revives. 
+The `creme332Strategy` has several limitations:
+- It can end up in a situation where it takes a very long time to eat the dots in the middle: 
+
+    ![gif showing bot hesitation 1](./assets/limitation1.gif)
+- It can move too close to the respawn point of the enemy and is unable to escape when enemy revives. 
+  
+    ![gif showing bot hesitation 2](./assets/limitation2.gif)
+
+## To-do
+- [ ] if distance between player and power up is small, go for powerup instead of fleeing
+- [ ] Rewrite other algorithms using interface
+- [ ] Improve `interface`:
+    - [ ] add get functions for `eye` of enemy
+    - [ ] add `powerTicks`
+- [ ] Add more documentation for original game code in `main.js`
 
 ## References
 - Code for pakupaku game: https://abagames.github.io/crisp-game-lib-11-games/pakupaku/main.js
