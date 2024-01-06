@@ -141,7 +141,7 @@ function interface() {
   };
 }
 
-(function botController() {
+function botController() {
   const game = interface();
   setInterval(main, 1); // ! Do not modify this line
 
@@ -192,4 +192,10 @@ function interface() {
     // console.log(game.getDots());
     if (getPlayerEnemyGap() < 20) flee();
   }
-})();
+}
+
+setTimeout(function () {
+  // botController must be called once all other scripts have executed.
+  // The initial execution time is around 50ms.
+  botController();
+}, 50); // ! Do no adjust this delay otherwise a lot of variables will be undefined
