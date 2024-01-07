@@ -1,5 +1,5 @@
 # pakupaku-ai 👾
-A simple bot for playing the 1D PAC-MAN game PakuPaku by ABA Games. The [highest score](./assets/best-score.gif) it has reached is 43000.
+A simple bot for playing the 1D PAC-MAN game PakuPaku by ABA Games with a [high score of 300k+](./assets/best-score.gif).
 
 ![AI GIF](./assets/sample-ai.gif)
 
@@ -13,6 +13,7 @@ A simple bot for playing the 1D PAC-MAN game PakuPaku by ABA Games. The [highest
 - A refactored version of the original game
 - An interface for writing your own bot
 - 2 bot strategies
+
 ## Installation
 > 🔴 **Requirements**: Git, Node.js 
 
@@ -46,20 +47,31 @@ All code for the bot is found in `docs/pakupaku/bot.js`.
 
 ## Limitations
 The `creme332Strategy` has several limitations:
-- It can end up in a situation where it takes a very long time to eat the dots in the middle: 
+- It can end up in a situation where it takes a very long time to eat the dots in the middle:
 
-    ![gif showing bot hesitation 1](./assets/limitation1.gif)
+    ![bot taking a long time to eat middle dot](./assets/slow-to-eat-middle.gif)
+
+- It can move too close to an enemy when power is about to expire:
+
+    ![bot moving too close to enemy when power is about to expire](./assets/too-close-to-enemy.gif)
+
+### Fixed ✅
+The following limitations are no longer present in the current version of `creme332Strategy` but might be useful when building your own bot:
+
 - It can move too close to the respawn point of the enemy and is unable to escape when enemy revives. 
   
-    ![gif showing bot hesitation 2](./assets/limitation2.gif)
+    ![bot moving too close to respawn point of enemy](./assets/too-close-to-respawn.gif)
 
 ## To-do
 - [ ] if distance between player and power up is small, go for powerup instead of fleeing
+- [ ] increase animation tick to speed up game
+- [x] add ability to pause game on key press
+- [ ] what is enemy velocity when enemy is dead
 - [ ] Rewrite other algorithms using interface
-- [ ] Improve `interface`:
-    - [ ] add get functions for `eye` of enemy
-    - [ ] add `powerTicks`
-- [ ] Add more documentation for original game code in `main.js`
+- [x] Improve `interface`:
+    - [x] add get functions for `eye` of enemy
+    - [x] add `powerTicks`
+- [x] Add more documentation for original game code in `main.js`
 - [ ] Minify javascript files
 
 ## Licenses
