@@ -3,6 +3,7 @@
   Modifications:
 - Turned off sound
 - Turned off game replay
+- Game can be ended at any time by pressing Enter
 - Added a couple of comments
 */
 
@@ -218,3 +219,10 @@ function addDots() {
   dots = times(16, (i) => ({ x: i * 6 + 5, isPower: i === pi }));
   multiplier++;
 }
+
+// End game when enter key is pressed
+document.body.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    end();
+  }
+});
