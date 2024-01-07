@@ -87,14 +87,6 @@ function interface() {
   }
 
   /**
-   * Movement direction of enemy
-   * @returns 1 if enemy is moving right and -1 otherwise
-   */
-  function getEnemyDirection() {
-    return getEnemyVelocity() > 0 ? 1 : -1;
-  }
-
-  /**
    * Reverse player movement direction.
    * @returns void
    */
@@ -104,14 +96,24 @@ function interface() {
   }
 
   /**
-   * Get player attributes
-   * @returns
+   * Retrieves player attributes including position, and velocity.
+   * @returns {Object} An object containing player attributes.
+   * @property {Object} position - The position of the player along x-axis.
+   * @property {Object} velocity - The velocity of the player along x-axis.
    */
   function getPlayer() {
     return {
       position: getPlayerPosition(),
       velocity: getPlayerVelocity(),
     };
+  }
+
+  /**
+   * Get ticks left before power up expires
+   * @returns int A negative value indicates that there is no active power up.
+   */
+  function getPowerTicks() {
+    return powerTicks;
   }
 
   /**
@@ -124,19 +126,25 @@ function interface() {
   }
 
   /**
-   * Get enemy attributes
-   * @returns
+   * Retrieves enemy attributes including position, velocity, and eye direction.
+   * @returns {Object} An object containing enemy attributes.
+   * @property {Object} position - The position of the enemy along x-axis.
+   * @property {Object} velocity - The velocity of the enemy along x-axis.
+   * @property {number} eyeDirection - The movement direction of the enemy's eye when the enemy is dead.
+   * It has a value of 0 when enemy is alive. 1 indicates right and -1 indicates left.
    */
   function getEnemy() {
     return {
       position: getEnemyPosition(),
       velocity: getEnemyVelocity(),
+      eyeDirection: enemy.eyeVx, // movement direction of enemy's eye when enemy is dead
     };
   }
 
   return {
     getPlayer,
     gameOngoing,
+    getPowerTicks,
     getEnemy,
     reversePlayerDirection,
     savePlayerPosition,
@@ -156,9 +164,11 @@ function botController() {
   function main() {
     if (!game.gameOngoing()) return;
 
+    console.log(enemy.eyeVx);
+
     // call your strategy here
-    creme332Strategy();
-    // AnotherGoodNameStrategy();
+    // creme332Strategy();
+    AnotherGoodNameStrategy();
 
     // save the position of your player
     // after strategy has been applied
@@ -196,23 +206,31 @@ function botController() {
    * Reference: https://news.ycombinator.com/item?id=38849868
    */
   function AnotherGoodNameStrategy() {
+    const currentPlayer = game.getPlayer();
+    const currentEnemy = game.getEnemy();
+
     /* direction of the enemy: to our right (1) or to our left (-1) */
-    const dir = enemy.x > player.x ? 1 : -1;
-    const nearWall = enemy.x < 10 || enemy.x > 90;
+    const enemyRelativeDirection =
+      currentEnemy.position > currentPlayer.position ? 1 : -1;
+    const playerDirection = currentPlayer.velocity > 0 ? 1 : -1;
+
     /* if pac-man... */
     if (
       /* ...has no powerup or powerup expires in less than 10 "ticks" */
-      powerTicks < 10 &&
-      /* ...is headed toward enemy */ player.vx == dir &&
-      /* ...is too close to enemy */ abs(player.x - enemy.x) <
+      game.getPowerTicks() < 10 &&
+      /* ...is headed toward enemy */
+      playerDirection == enemyRelativeDirection &&
+      /* ...is too close to enemy */
+      abs(currentPlayer.position - currentEnemy.position) <
         /* ...the distance before running away can be lower if we're near an edge */
-        (dir == 1 ? player.x / 7 : (100 - player.x) / 7) + 7 &&
+        (enemyRelativeDirection == 1
+          ? currentPlayer.position / 7
+          : (100 - currentPlayer.position) / 7) +
+          7 &&
       /* and if enemy's state is not "eyes flying back" */
-      enemy.eyeVx == 0
+      currentEnemy.eyeDirection == 0
     ) {
-      // "ArrowUp" or any arrow key reverses the direction of pac-man
-      document.dispatchEvent(new KeyboardEvent("keydown", { code: "ArrowUp" }));
-      document.dispatchEvent(new KeyboardEvent("keyup", { code: "ArrowUp" }));
+      game.reversePlayerDirection();
     }
   }
 }
