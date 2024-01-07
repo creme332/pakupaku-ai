@@ -52,6 +52,14 @@ function interface() {
   }
 
   /**
+   * Get game difficulty. PowerTick decreases by this value every tick.
+   * @returns int
+   */
+  function getDifficulty() {
+    return difficulty;
+  }
+
+  /**
    * Returns velocity of player. Negative velocity means that player
    * is moving left and positive velocity means that player is moving right.
    * @returns float
@@ -149,6 +157,7 @@ function interface() {
     reversePlayerDirection,
     savePlayerPosition,
     getDots,
+    getDifficulty,
   };
 }
 
@@ -182,9 +191,12 @@ function botController() {
     const currentEnemy = game.getEnemy();
     const currentPowerTick = game.getPowerTicks();
 
-    const playerEnenmyGap = currentPlayer.position - currentEnemy.position; // Calculates displacement from player to enemy
+    const playerEnenmyDisplacement =
+      currentPlayer.position - currentEnemy.position; // Calculates displacement from player to enemy
     const playerDirection = currentPlayer.velocity > 0 ? 1 : -1;
-    const powerUpAlmostOver = currentPowerTick < 10 && currentPowerTick > 0;
+
+    const powerUpAlmostOver =
+      currentPowerTick < 10 + game.getDifficulty() && currentPowerTick > 0;
 
     // calculate distance between player and opposite wall
     const distanceFromOppositeWall =
@@ -192,7 +204,7 @@ function botController() {
         ? 100 - currentPlayer.position
         : currentPlayer.position;
 
-    const enemyIsVeryClose = Math.abs(playerEnenmyGap) < 20;
+    const enemyIsVeryClose = Math.abs(playerEnenmyDisplacement) < 20;
     const playerIsFarFromOppositeWall = distanceFromOppositeWall > 60;
 
     const playerChasingEnemy =
@@ -204,40 +216,39 @@ function botController() {
         currentPlayer.velocity > 0);
 
     if (
+      // player is chasing enemy
+      playerChasingEnemy &&
+      // power is about to expire
+      powerUpAlmostOver &&
+      // player and enemy are very close
+      enemyIsVeryClose
+    ) {
+      console.log("Not worth chasing enemy");
+      game.reversePlayerDirection();
+      return;
+    }
+
+    if (
       // player is moving towards enemy's respawn point when enemy is dead
       currentEnemy.eyeDirection * playerDirection == 1 &&
       // player is too far from opposite wall and too close to respawn point
       playerIsFarFromOppositeWall &&
       // player has little or no power
-      currentPowerTick < 10
+      currentPowerTick < 20
     ) {
       console.log("Too close to respawn point");
       game.reversePlayerDirection();
       return;
     }
 
-    if (
-      // player and enemy are very close
-      enemyIsVeryClose &&
-      // player and enemy are approaching each other
-      currentPlayer.velocity * currentEnemy.velocity < 0
-    ) {
-      // TODO if powerup is reachable go for it
-      game.reversePlayerDirection();
-      return;
-    }
+    // TODO if powerup is reachable go for it
 
     if (
-      // player is chasing enemy
-      playerChasingEnemy &&
-      // power is about to expire
-      powerUpAlmostOver &&
       // player and enemy are very close
       enemyIsVeryClose &&
-      // player is too far too escape
-      playerIsFarFromOppositeWall
+      // player and enemy are moving in opposite directions
+      currentPlayer.velocity * currentEnemy.velocity < 0
     ) {
-      console.log("Not worth chasing enemy");
       game.reversePlayerDirection();
       return;
     }
