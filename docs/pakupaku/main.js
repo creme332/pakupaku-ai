@@ -89,10 +89,10 @@ let player;
  * @type {{x: number, eyeVx: number}} */
 let enemy;
 /** @type {{x: number, isPower: boolean}[]} */
-let dots;
-let powerTicks;
+let dots; // yellow dots that player eats
+let powerTicks; // duration of power up
 let animTicks;
-let multiplier;
+let multiplier; // multiplier for game score
 
 function update() {
   if (!ticks) {
@@ -144,12 +144,18 @@ function update() {
     );
     const c = char(d.isPower ? "g" : "f", d.x, 30).isColliding.char;
     if (c.a || c.b || c.c) {
+      // check if power dot is eaten
       if (d.isPower) {
+        // play jump sound
         play("jump");
+
+        // if enemy is alive, set duration of power to 120
         if (enemy.eyeVx === 0) {
           powerTicks = 120;
         }
       } else {
+        // play hit sound when normal
+        // dot is eaten
         play("hit");
       }
       addScore(multiplier);
@@ -172,9 +178,11 @@ function update() {
     100
   );
 
+  // when enemy's eye reaches a wall, stop it from moving.
   if ((enemy.eyeVx < 0 && enemy.x < 1) || (enemy.eyeVx > 0 && enemy.x > 99)) {
     enemy.eyeVx = 0;
   }
+
   color(
     powerTicks > 0
       ? powerTicks < 30 && powerTicks % 10 < 5
@@ -202,12 +210,16 @@ function update() {
       powerTicks = 0;
       multiplier++;
     } else {
-      // collision with enemy end game
+      // when collision with enemy occurs, play explosion sound
+      // and  end game
       play("explosion");
       end();
     }
   }
   powerTicks -= difficulty;
+
+  // when all dots have been eaten, play coin sound
+  // and add new dots
   if (dots.length === 0) {
     play("coin");
     addDots();
