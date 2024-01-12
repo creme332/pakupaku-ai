@@ -1,7 +1,9 @@
 # pakupaku-ai 👾
-A simple bot for playing the 1D PAC-MAN game PakuPaku by ABA Games with a [high score of 300k+](./assets/best-score.gif).
+A simple bot for playing the 1D PAC-MAN game PakuPaku by ABA Games with a [high score of 1M+](./assets/high_score.gif).
 
 ![AI GIF](./assets/sample-ai.gif)
+
+![Screenshot of high score](./assets/hi-screenshot.png)
 
 [![badge](https://img.shields.io/badge/AI%20Live%20Preview-000?style=for-the-badge&logo=probot&logoColor=%#00B0D8)
 ](https://creme332.github.io/pakupaku-ai/?pakupaku)
